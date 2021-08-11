@@ -57,7 +57,8 @@ disj_onmessage =: 3 : 0
 	echo usertag ,  ' sent: '  , msgcontent
 )
 
-disj_begin_client bottoken```
+disj_begin_client bottoken
+```
    
 # Documentation
 ## Main Methods
