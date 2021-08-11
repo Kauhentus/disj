@@ -4,7 +4,7 @@ NB. sdclose disj_sk
 disj_parentdirectory =: '~\Desktop\Programming\J\disj\'
 0!:0 < jpath disj_parentdirectory , 'client.ijs'
 
-bottoken =: 'ODcyMjg4OTQ2NDM5MjA0ODc2.YQnsYw.MZ0i7djEmdLcOIe-nqkvNKzyaTY'
+bottoken =: '<token>'
 prefix =: disj_char2str '.'
 
 disj_onready =: 3 : 0
