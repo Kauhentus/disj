@@ -130,3 +130,5 @@ Splits a string into an array of strings on each token (ie a space), useful beca
 
 ---
 There are more methods inside `./client.ijs`, but they are only used internally. Some may be useful to you, some may not.
+---
+- Kauhentus aka Joshua Yang
