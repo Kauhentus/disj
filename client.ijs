@@ -283,7 +283,7 @@ NB. starting point of DisJ
 disj_begin_client =: 3 : 0 
     NB. start node.js server proxy (allows us to use https & wss)
     echo 'Starting proxy...'
-    3000 fork 'node ' , jpath disj_parentdirectory , '\startserver.js' , ' ' , jpath disj_parentdirectory
+    3000 fork 'node ' , disj_parentdirectory , 'startserver.js' , ' ' , disj_parentdirectory
 
     NB. connect to node.js proxy
     disj_sk =: 0 pick sdcheck sdsocket ''

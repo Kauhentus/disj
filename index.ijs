@@ -1,12 +1,14 @@
 NB. jconsole ~\Desktop\Programming\J\disj\index.ijs
-NB. sdclose disj_sk
 
-disj_parentdirectory =: '~\Desktop\Programming\J\disj\'
-0!:0 < jpath disj_parentdirectory , 'client.ijs'
+NB. J relative pathing hack, courtesy of Raul Miller of jprogramming forums
+disj_getparentdirectory =: 3 : 0
+  ({.~ i:&'/') rplc&'\/' ;(4!:3''){~4!:4<'disj_getparentdirectory'
+)
+disj_parentdirectory =: (disj_getparentdirectory '') , '/'
+0!:0 < disj_parentdirectory , 'client.ijs'
 
 NB. update these as needed
-bottoken =: '.'
-
+bottoken =: ''
 prefix =: disj_char2str '.'
 
 disj_onready =: 3 : 0

@@ -4,8 +4,7 @@ The first (proof-of-concept) library for writing Discord bots in J. Written by a
 ## Prerequisites 
 1. DisJ uses a node.js proxy to use HTTPS/WSS, so node should be installed. Additionally, the websocket library (identified in package.json) should also be installed via `npm i`. 
 2. The `convert/pjson` J addon should be installed. 
-3. In `./index.ijs`, replace `disj_parentdirectory`with the path of  the folder where you are using DisJ 
-4. In `./index.ijs`, fill `bottoken` with your Discord bot token
+3. In `./index.ijs`, fill `bottoken` with your Discord bot token
 ## Running the example
 To start the example Discord bot, you will run a command like this: `jconsole ~\Desktop\Programming\J\disj\index.ijs`, replacing the path to `index.ijs` with the path of the folder where you are using DisJ *(I'm so sorry about this ... I couldn't get J to use relative pathing. If you do know, please reach out to me!)*
 
