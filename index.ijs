@@ -18,16 +18,22 @@ disj_onmessage =: 3 : 0
     eventdata =. y
     msgcontent =. 'content' disj_select eventdata
     msgchannelid =. 'channel_id' disj_select eventdata
-    containsprefix =. prefix -: ($ prefix) {. msgcontent
-    if. 0 = containsprefix do. return. end. 
 
-    args =. ' ' disj_strsplit msgcontent
+    NB. ignore messages that do not contain our prefix
+    containsprefix =. prefix -: ($ prefix) {. msgcontent
+    if. 0 = containsprefix do. return. end.                 
+
+    NB. get the arguments our user submitted
+    args =. ' ' disj_strsplit msgcontent                    
     command =. 0 {:: args
-    userdata =. 'author' disj_select eventdata
+
+    NB. log the user and command to console
+    userdata =. 'author' disj_select eventdata      
     usertag =. ,/> (disj_select&userdata) &.> ('username' ; 'discriminator')
     echo usertag , ' sent: ' , msgcontent  
     errormsgdata =. |: ('description' ; 'Con  lt `.help` and try again') ,. ('title' ; 'Bad input') ,. ('color' ; 16711680) ,. ('embed' ; 1)
 
+    NB. handle different commands and their respective arguments
     select. command 
     case. prefix , 'ping' do.
         returndata =. |: ('embed' ; 0) ,. ('content' ; 'pong!')
@@ -64,6 +70,7 @@ disj_onmessage =: 3 : 0
     end.
 )
 
+NB. rudimentary color conversion functions
 hex2rgb =: 3 : 0
     hexmap =. (<"0 '0123456789abcdef') ,.  <"0 i.16
     hex =. (disj_select&hexmap)"0 tolower y 
@@ -87,5 +94,6 @@ rgb2int =: 3 : 0
     +/ (65536 256 1) * rgb
 )
 
+NB. don't output detailed echo logs and begin client
 disj_displayconsole =: 0
 disj_begin_client bottoken
