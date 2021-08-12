@@ -6,6 +6,7 @@ disj_parentdirectory =: '~\Desktop\Programming\J\disj\'
 
 NB. update these as needed
 bottoken =: '.'
+
 prefix =: disj_char2str '.'
 
 disj_onready =: 3 : 0

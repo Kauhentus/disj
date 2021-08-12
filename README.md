@@ -57,30 +57,31 @@ disj_onmessage =: 3 : 0
 	echo usertag ,  ' sent: '  , msgcontent
 )
 
-disj_begin_client bottoken```
+disj_begin_client bottoken
+```
    
 # Documentation
 ## Main Methods
 ### `disj_begin_client <token>`  
-Logs in and connects the client to Discord's API.
-`<token>` -- string, bot token issued by Discord
+Logs in and connects the client to Discord's API.  
+`<token>` -- string, bot token issued by Discord  
 
-### `disj_onready <eventhandler>`
-Fires when the client is ready (finished logging in and connecting)
-`<eventhandler>` -- monad (preferably 3:0) where `y` is a   [`readyevent`](https://discord.com/developers/docs/topics/gateway#ready)
+### `disj_onready <eventhandler>`  
+Fires when the client is ready (finished logging in and connecting)  
+`<eventhandler>` -- monad (preferably 3:0) where `y` is a   [`readyevent`](https://discord.com/developers/docs/topics/gateway#ready)  
 
-### `disj_onmessage <eventhandler>`
-Fires when the client receives a message
-`<eventhandler>` -- monad (preferably 3:0) where `y` is a  [`messageevent`](https://discord.com/developers/docs/resources/channel#message-object)
+### `disj_onmessage <eventhandler>`  
+Fires when the client receives a message  
+`<eventhandler>` -- monad (preferably 3:0) where `y` is a  [`messageevent`](https://discord.com/developers/docs/resources/channel#message-object)  
 
-### `disj_update_presence <presence>`
-Sets the bot's presence
-`<presence>` -- string
+### `disj_update_presence <presence>`  
+Sets the bot's presence  
+`<presence>` -- string  
 
-### `<channelid> disj_send_message <data>`
-Dyad that sends a message in a specified channel.
-`<channelid>` -- string, snowflake id of a channel, typically comes from  the `channel_id` property of a [`messageevent`](https://discord.com/developers/docs/resources/channel#message-object)
-`<data>` -- a custom messagedata object that will be covered below
+### `<channelid> disj_send_message <data>`  
+Dyad that sends a message in a specified channel.  
+`<channelid>` -- string, snowflake id of a channel, typically comes from  the `channel_id` property of a [`messageevent`](https://discord.com/developers/docs/resources/channel#message-object)  
+`<data>` -- a custom messagedata object that will be covered below  
 ## Data structures in DisJ
 Discord's api communicates with JSON data structures. The closest equivalent in J are 2xn box structures that look similar to this:
 ```
@@ -110,22 +111,24 @@ Discord's api communicates with JSON data structures. The closest equivalent in 
 ```
 
 The `messageevent` and `readyevent` data are given in this format. DisJ has several helper functions to work with these map-like structures:
-### `<key> disj_select <data>`
-Returns the value inside the object associated with a specific key
-`<key>` -- string, the key that is associated with a specific value
-`<data>` -- custom data structure, returned from `onmessage` and `onready` events
-### `<key> disj_contains <data>`
-Returns a `boolean` which tells if the data structure contains an entry for a given key
-`<key>` -- string, the key that is associated with a specific value
-`<data>` -- custom data structure, returned from `onmessage` and `onready` events
-### `disj_char2str <char>`
-For one letter keys, `disj_select` breaks because in J, a key like `'d'` is evaluated as a character, not a string. Convert characters to strings with this function.
-`<char>` -- character
+### `<key> disj_select <data>`  
+Returns the value inside the object associated with a specific key  
+`<key>` -- string, the key that is associated with a specific value    
+`<data>` -- custom data structure, returned from `onmessage` and `onready` events  
+### `<key> disj_contains <data>`  
+Returns a `boolean` which tells if the data structure contains an entry for a given key  
+`<key>` -- string, the key that is associated with a specific value  
+`<data>` -- custom data structure, returned from `onmessage` and `onready` events  
+### `disj_char2str <char>`  
+For one letter keys, `disj_select` breaks because in J, a key like `'d'` is evaluated as a character, not a string. Convert characters to strings with this function.  
+`<char>` -- character  
 ## Other methods
-### `<token> disj_strsplit <string>`
-Splits a string into an array of strings on each token (ie a space), useful because J's `;:` is inadequate in specific cases
-`<token>` -- string, token to split the input string on
-`<string>` -- string, the string to be split up
+### `<token> disj_strsplit <string>`  
+Splits a string into an array of strings on each token (ie a space), useful because J's `;:` is inadequate in specific cases  
+`<token>` -- string, token to split the input string on  
+`<string>` -- string, the string to be split up  
 
 ---
 There are more methods inside `./client.ijs`, but they are only used internally. Some may be useful to you, some may not.
+---
+- Kauhentus aka Joshua Yang
