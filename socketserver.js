@@ -27,7 +27,6 @@ const server = net.createServer((socket) => {
             headers: headersArgs.filter(headerArgs => headerArgs[0] != 'Host').reduce((k,v)=>(k[v[0]]=v[1],k),{})
         };
 
-        // console.log(options);
         console.log('Making HTTPS request...')
 
         if(options.method == 'SOCKETCONNECT'){

@@ -7,7 +7,7 @@ load 'task'
 coinsert 'jtask'
 load 'convert/pjson'    NB. install in package manager
 
-NB. get system time in millis
+NB. function to get system time in millis, not standard but works
 disj_getminorsecsfromtime =: 5&{+(60"_*4&{)+(3600"_*3&{)+(86400"_*2&{) 
 disj_getmajdaysecs =: 86400"_ (* +/) 1&{ {. 0 31 28 31 30 31 30 31 31 30 31 30 31"_
 disj_getmajyearsecs =: 31536000 * 0&{ - 1970"_
@@ -30,6 +30,7 @@ NB. socket globals, initiated in begin client
 disj_sk =: _ 
 disj_address =: _
 
+NB. custom "http requests" specially designed to "proxy" websockets (so unprofessional, I know ;-;)
 NB. create websocket initiation request & send it
 disj_websocketconnect =: 3 : 0
     request_line =. 'SOCKETCONNECT / HTTP/1.0'
@@ -66,20 +67,24 @@ disj_echo =: 3 : 'if. disj_displayconsole do. echo y end.'
 disj_bottoken =: ''
 disj_isloggedin =: 0
 
+NB. heartbeat variables
 disj_heartbeatinterval =: _
 disj_beginheartbeat =: 0
 disj_lastheartbeat =: _
 disj_lastsequence =: 'null'
 
+NB. socket variables for >2048 length messages
 disj_intransit =: 0
 disj_finishedtransit =: 0
 disj_intransitmsg =: ''
 
 disj_readyevent =: _
 
+NB. functions called on the message and ready events, to be supplied by user
 disj_onmessage =: _
 disj_onready =: _
 
+NB. handle discord events
 disj_handleeventdispatch =: 3 : 0
     response =. y
     eventtype =: (disj_char2str 't') disj_select response
@@ -100,21 +105,21 @@ disj_handleeventdispatch =: 3 : 0
     end.
 )
 
+NB. handle raw response from https/websocket
 disj_handleresponse =: 3 : 0
+    NB. collect data and check for errors (in node.js proxy)
     out =. y
-    returncode =. ". {. out
+    returncode =. ". {. out         
     2!:55 ^:(1 = returncode)  _ 
-
     response =. dec_pjson_ }. out
 
+    NB. 0 = http response, 1 = node error, 2 = websocket response
     select. returncode
     case. 2 do.
-
-        NB. disj_echo 'Response length: ' , ": $ }. out
         opcode =. 'op' disj_select response
         disj_echo '    Response op code: ' , ": opcode
-        NB. disj_echo out
 
+        NB. implement discord gateway s field requirements
         receivedseqnull =. 1 = $ 1 , (disj_char2str 's') disj_select response
         if. receivedseqnull do. disj_lastsequence =: 'null'
         else. disj_lastsequence =: ": (disj_char2str 's') disj_select response end.
@@ -132,14 +137,15 @@ disj_handleresponse =: 3 : 0
                 disj_beginheartbeat =: 1
                 disj_isloggedin =: 1
                 disj_lastheartbeat =: disj_getsecs '' 
-
+    
+                NB. construct login json 
                 returnopfield =. 'op' ; 2
                 tokenfield =. 'token' ; disj_bottoken
                 propertiesfield =. 'properties' ;  <(('os' ; 'browser') , ('browser' ; 'chrome') ,: ('device' ; 'cloud9'))
                 compressfield =. 'compress' ; 0
                 dfield =. 'd' ; <(tokenfield , propertiesfield ,: compressfield)
-                
                 requestjson =. enc_pjson_ returnopfield ,: dfield
+
                 disj_websocketwrite requestjson
                 disj_echo '    LOGGED_IN'
             end.  
@@ -177,15 +183,16 @@ while. 1 do.
     NB. socket logic
     sdcheck sdioctl disj_sk , FIONBIO , 1
 
+    NB. check if socket has data to read, block the thread if needed
     socketstatus =. sdcheck sdselect disj_sk ; (<i.0) , (<i.0) , <0
     unblock =. $ 0 {:: socketstatus
 
     if. unblock do.
-        NB. disj_echo 'blocking thread'
         sdcheck sdioctl disj_sk , FIONBIO , 0
 
-        out =. sdcheck sdrecv disj_sk,2048,0
+        out =. sdcheck sdrecv disj_sk,2048,0    NB. transmit data in 2048 byte chunks, limit probably should be raised
 
+        NB. system to collect unit of data over multiple socket writes
         if. disj_intransit do.
             disj_intransitmsg =: disj_intransitmsg , {. > out
             disj_finishedtransit =: '!&J$' -: disj_taketail4 disj_intransitmsg
@@ -202,6 +209,7 @@ while. 1 do.
             end.
         end.
 
+        NB. full data has been received, send it to handler
         if. disj_finishedtransit do.
             disj_echo '---------------------------'
             disj_echo 'Received complete response:'
@@ -215,13 +223,13 @@ while. 1 do.
             disj_handleresponse completeresponse
         end.
 
-        NB. disj_echo 'unblock thread'
+        NB. unblock thread, heartbeat can continue while waiting for next msg
         sdcheck sdioctl disj_sk , FIONBIO , 1
     else. 
         
     end.
 
-    NB. heartbeat logic
+    NB. heartbeat logic as required by discord api
     if. disj_beginheartbeat do.
         timesincelastbeat =: (disj_getsecs '') - disj_lastheartbeat
         
@@ -238,6 +246,7 @@ while. 1 do.
 end.
 )
 
+NB. assemble fields (some optional) into json and send it
 disj_send_message =: 4 : 0
     data =. y 
     
@@ -262,6 +271,7 @@ disj_send_message =: 4 : 0
     ('POST /api/v8/channels/' , x , '/messages') disj_httpsrequest json
 )
 
+NB. update text in discord presence feature
 disj_update_presence =: 3 : 0
     sdcheck sdioctl disj_sk , FIONBIO , 1
     json =. '{"op":3,"d":{"since":null,"activities":[{"name":"' , y , '","type":0}],"status":"online","afk":false}}'
@@ -269,6 +279,7 @@ disj_update_presence =: 3 : 0
     sdcheck sdioctl disj_sk , FIONBIO , 0
 )
 
+NB. starting point of DisJ
 disj_begin_client =: 3 : 0 
     NB. start node.js server proxy (allows us to use https & wss)
     echo 'Starting proxy...'
