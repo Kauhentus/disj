@@ -1,5 +1,5 @@
 # DisJ
-Proof-of-concept library for writing Discord bots in J. Written by a J newbie who couldn't figure out relative pathing works in J (especially cross-platform). J does not have an event-driven paradigm so I tried my best to implement one (with many restrictions). 
+The first (proof-of-concept) library for writing Discord bots in J. Written by a J newbie who couldn't figure out relative pathing works in J (especially cross-platform). J does not have an event-driven paradigm so I tried my best to implement one. 
  
 ## Prerequisites 
 1. DisJ uses a node.js proxy to use HTTPS/WSS, so node should be installed. Additionally, the websocket library (identified in package.json) should also be installed via `npm i`. 
