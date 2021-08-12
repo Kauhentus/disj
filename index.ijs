@@ -4,7 +4,8 @@ NB. sdclose disj_sk
 disj_parentdirectory =: '~\Desktop\Programming\J\disj\'
 0!:0 < jpath disj_parentdirectory , 'client.ijs'
 
-bottoken =: 'ODcyMjg4OTQ2NDM5MjA0ODc2.YQnsYw.MZ0i7djEmdLcOIe-nqkvNKzyaTY'
+NB. update these as needed
+bottoken =: '.'
 prefix =: disj_char2str '.'
 
 disj_onready =: 3 : 0
@@ -24,7 +25,7 @@ disj_onmessage =: 3 : 0
     userdata =. 'author' disj_select eventdata
     usertag =. ,/> (disj_select&userdata) &.> ('username' ; 'discriminator')
     echo usertag , ' sent: ' , msgcontent  
-    errormsgdata =. |: ('description' ; 'Consult `.help` and try again') ,. ('title' ; 'Bad input') ,. ('color' ; 16711680) ,. ('embed' ; 1)
+    errormsgdata =. |: ('description' ; 'Con  lt `.help` and try again') ,. ('title' ; 'Bad input') ,. ('color' ; 16711680) ,. ('embed' ; 1)
 
     select. command 
     case. prefix , 'ping' do.
